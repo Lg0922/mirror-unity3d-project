@@ -1,44 +1,52 @@
-// lg
-
+//人物基本操作：移动、转向、跳跃
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class p : MonoBehaviour
-{
+public class playercontroller : MonoBehaviour {
 
     private Rigidbody2D rig;
-    private float jumpForce;//上跳所用的力
-    private float moveSpeed;//移动速度
-    bool playerjump = false;
+    public float moveSpeed;
+    public float jumpSpeed;
+    private bool playerjump = false;
+    private float direction = 0;
 
     void Start()
     {
         rig = GetComponent<Rigidbody2D>();
-        jumpForce = 400f;
-        moveSpeed = 5.5f;
-
     }
 
     void FixedUpdate()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
+        //人物跳跃
+        if (Input.GetKeyDown(KeyCode.W))
         {
             if (!playerjump)
             {
-                rig.AddForce(new Vector2(0, jumpForce));
+                rig.velocity = new Vector2(rig.velocity.x, rig.velocity.y+jumpSpeed);
                 playerjump = true;
             }
         }
-        rig.velocity = new Vector2(moveSpeed * Input.GetAxis("Horizontal"), rig.velocity.y);
+        //人物转向
+        direction = Input.GetAxis("Horizontal");
+        if(direction<0)
+        {
+            transform.eulerAngles = new Vector3(0, 180, 0);
+        }
+        else if (direction>0)
+        {
+            transform.eulerAngles = new Vector3(0, 0, 0);
+        }
+        //人物移动
+       rig.velocity = new Vector2(moveSpeed * Input.GetAxis("Horizontal"), rig.velocity.y);
     }
     void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.collider.tag == "Floor")//防止二段跳
+        if (collision.collider.tag == "Floor")
+
         {
-            playerjump = false;
+            playerjump= false;//防止二段跳
         }
     }
+
 }
-
-
